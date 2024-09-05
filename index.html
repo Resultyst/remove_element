@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Element from Array</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .array-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .element {
+            padding: 10px 15px;
+            border: 2px solid #d9534f;
+            border-radius: 5px;
+            background-color: #f9ecee;
+            color: #d9534f;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s ease;
+        }
+
+        .element.highlight {
+            background-color: #5bc0de;
+            color: white;
+        }
+
+        .element.moved {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-left: 5px solid #5bc0de;
+            text-align: left;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 50%;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #5bc0de;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #31b0d5;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Remove Element from Array</h2>
+    <p>Enter a list of numbers separated by commas (e.g., 1,2,3,4,2,5):</p>
+    <input type="text" id="arrayInput" placeholder="Enter array">
+    <p>Enter the value to remove:</p>
+    <input type="text" id="valueInput" placeholder="Value to remove">
+    <button onclick="startRemoval()">Remove Element</button>
+
+    <div class="array-container" id="arrayDisplay"></div>
+
+    <div class="explanation" id="explanation">
+        <strong>Explanation:</strong>
+        <p>Click "Remove Element" to see the step-by-step removal of the specified value from the array.</p>
+    </div>
+</div>
+
+<script>
+    function parseInputValues(input) {
+        return input.split(',').map(val => parseInt(val.trim())).filter(val => !isNaN(val));
+    }
+
+    function createElement(value) {
+        const element = document.createElement('div');
+        element.className = 'element';
+        element.innerText = value;
+        return element;
+    }
+
+    function displayArray(container, values, highlightIndex = -1, movedIndex = -1) {
+        container.innerHTML = '';
+        values.forEach((value, index) => {
+            const element = createElement(value);
+            if (index === highlightIndex) element.classList.add('highlight');
+            if (index === movedIndex) element.classList.add('moved');
+            container.appendChild(element);
+        });
+    }
+
+    function setExplanation(text) {
+        const explanation = document.getElementById('explanation');
+        explanation.innerHTML = `<strong>Explanation:</strong><p>${text}</p>`;
+    }
+
+    function startRemoval() {
+        let nums = parseInputValues(document.getElementById('arrayInput').value);
+        let val = parseInt(document.getElementById('valueInput').value);
+        const arrayContainer = document.getElementById('arrayDisplay');
+
+        if (nums.length === 0 || isNaN(val)) {
+            setExplanation('Please enter a valid array and a value to remove.');
+            return;
+        }
+
+        displayArray(arrayContainer, nums);
+        setExplanation(`Starting the process to remove all instances of value ${val} from the array.`);
+
+        let a = 0;
+
+        function removeStep(i) {
+            if (i >= nums.length) {
+                setExplanation(`Process complete! The array without the value ${val} is now [${nums.slice(0, a).join(', ')}] with length ${a}.`);
+                return;
+            }
+
+            if (nums[i] !== val) {
+                nums[a] = nums[i];
+                displayArray(arrayContainer, nums, i, a);
+                setExplanation(`Value ${nums[i]} is not equal to ${val}. Moving it to position ${a}.`);
+                a++;
+            } else {
+                displayArray(arrayContainer, nums, i);
+                setExplanation(`Value ${nums[i]} is equal to ${val}. Skipping.`);
+            }
+
+            setTimeout(() => removeStep(i + 1), 1000);
+        }
+
+        setTimeout(() => removeStep(0), 1000);
+    }
+</script>
+
+</body>
+</html>
+
